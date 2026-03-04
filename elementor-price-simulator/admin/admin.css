@@ -1,0 +1,105 @@
+/* =========================================================
+   Elementor Price Simulator — Styles page d'administration
+   ========================================================= */
+
+.eps-admin-wrap {
+    max-width: 1100px;
+    margin-top: 1.5rem;
+}
+
+.eps-admin-title {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    font-size: 1.5rem !important;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 1.5rem !important;
+}
+.eps-admin-icon { font-size: 1.75rem; line-height: 1; }
+
+.eps-admin-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 1.5rem;
+    align-items: start;
+}
+@media (max-width: 900px) {
+    .eps-admin-grid { grid-template-columns: 1fr; }
+}
+
+.eps-admin-card {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 1rem;
+    padding: 1.75rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,.04);
+}
+.eps-admin-card h2 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0 0 .5rem;
+    border-bottom: none !important;
+    padding-bottom: 0 !important;
+}
+.eps-admin-desc {
+    color: #64748b;
+    font-size: .875rem;
+    margin: 0 0 1.25rem;
+    line-height: 1.5;
+}
+.eps-admin-empty {
+    background: #f8fafc;
+    border: 1px dashed #cbd5e1;
+    border-radius: .75rem;
+    padding: 1.5rem;
+    text-align: center;
+    color: #94a3b8;
+    font-size: .875rem;
+}
+
+.eps-admin-table { border-radius: .5rem; overflow: hidden; }
+.eps-admin-table th { font-size: .8rem; color: #475569; }
+.eps-btn-delete {
+    color: #ef4444;
+    font-size: .8rem;
+    font-weight: 600;
+    text-decoration: none;
+    padding: .3rem .7rem;
+    border: 1px solid rgba(239,68,68,.3);
+    border-radius: .5rem;
+    transition: all .2s;
+    display: inline-block;
+}
+.eps-btn-delete:hover {
+    background: #ef4444;
+    color: #fff;
+    border-color: #ef4444;
+}
+
+/* Guide */
+.eps-admin-guide { background: #f8fafc; }
+.eps-guide-steps {
+    padding-left: 1.25rem;
+    margin: .75rem 0 0;
+    font-size: .875rem;
+    color: #475569;
+    line-height: 1.6;
+}
+.eps-guide-steps li { margin-bottom: 1rem; }
+.eps-guide-steps strong { color: #1e293b; }
+
+.eps-guide-rules {
+    list-style: none;
+    padding: 0;
+    margin: .5rem 0 0;
+    font-size: .8rem;
+    color: #475569;
+}
+.eps-guide-rules li {
+    padding: .35rem 0;
+    border-bottom: 1px solid #e2e8f0;
+}
+.eps-guide-rules li:last-child { border-bottom: none; }
+.eps-guide-rules strong { color: #f97316; }
