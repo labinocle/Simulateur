@@ -1,11 +1,10 @@
 <?php
+use Elementor\Widget_Base;
+use Elementor\Controls_Manager;
+
 if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
-
-use Elementor\Widget_Base;
-use Elementor\Controls_Manager;
-use Elementor\Group_Control_Typography;
 
 /**
  * Widget Elementor : Simulateur de prix Gifteo

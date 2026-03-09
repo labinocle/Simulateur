@@ -58,39 +58,50 @@ final class Elementor_Price_Simulator {
     }
 
     private function hooks() {
-        add_action( 'elementor/widgets/register', [ $this, 'register_widgets' ] );
-        add_action( 'elementor/frontend/after_enqueue_styles', [ $this, 'enqueue_frontend_styles' ] );
-        add_action( 'elementor/frontend/after_enqueue_scripts', [ $this, 'enqueue_frontend_scripts' ] );
-        add_action( 'wp_ajax_eps_get_price', [ $this, 'ajax_get_price' ] );
+        // Enregistrement des assets (avant toute action Elementor)
+        add_action( 'wp_enqueue_scripts', [ $this, 'register_assets' ] );
+        add_action( 'elementor/editor/before_enqueue_scripts', [ $this, 'register_assets' ] );
+
+        // Compatibilité Elementor 2.x (< 3.5) et 3.x+
+        if ( version_compare( ELEMENTOR_VERSION, '3.5.0', '>=' ) ) {
+            add_action( 'elementor/widgets/register', [ $this, 'register_widgets' ] );
+        } else {
+            add_action( 'elementor/widgets/widgets_registered', [ $this, 'register_widgets_legacy' ] );
+        }
+
+        add_action( 'wp_ajax_eps_get_price',        [ $this, 'ajax_get_price' ] );
         add_action( 'wp_ajax_nopriv_eps_get_price', [ $this, 'ajax_get_price' ] );
     }
 
-    public function register_widgets( $widgets_manager ) {
-        $widgets_manager->register( new EPS_Widget() );
-    }
-
-    public function enqueue_frontend_styles() {
-        wp_enqueue_style(
+    /**
+     * Enregistre (sans enqueuer) les assets frontend.
+     * Elementor les charge automatiquement via get_script_depends() / get_style_depends().
+     */
+    public function register_assets() {
+        wp_register_style(
             'eps-frontend',
             EPS_URL . 'assets/css/price-simulator.css',
             [],
             EPS_VERSION
         );
-    }
 
-    public function enqueue_frontend_scripts() {
-        wp_enqueue_script(
+        wp_register_script(
             'eps-frontend',
             EPS_URL . 'assets/js/price-simulator.js',
-            [ 'jquery' ],
+            [],          // pas de dépendance jQuery — le JS est vanilla
             EPS_VERSION,
             true
         );
+    }
 
-        wp_localize_script( 'eps-frontend', 'epsConfig', [
-            'ajaxUrl' => admin_url( 'admin-ajax.php' ),
-            'nonce'   => wp_create_nonce( 'eps_nonce' ),
-        ] );
+    /** Elementor >= 3.5 */
+    public function register_widgets( $widgets_manager ) {
+        $widgets_manager->register( new EPS_Widget() );
+    }
+
+    /** Elementor < 3.5 */
+    public function register_widgets_legacy( $widgets_manager ) {
+        $widgets_manager->register_widget_type( new EPS_Widget() );
     }
 
     public function ajax_get_price() {
