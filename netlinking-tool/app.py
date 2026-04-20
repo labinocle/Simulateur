@@ -393,15 +393,25 @@ with tab2:
         m = {"low": "color: #86efac", "medium": "color: #fcd34d", "high": "color: #fca5a5"}
         return m.get(str(val), "")
 
+    def color_score(val):
+        try:
+            v = float(val)
+            if v >= 75:   return "background-color: #14532d; color: #bbf7d0; font-weight:700"
+            if v >= 55:   return "background-color: #451a03; color: #fde68a"
+            if v >= 30:   return "background-color: #431407; color: #fed7aa"
+            return "background-color: #450a0a; color: #fecaca"
+        except (ValueError, TypeError):
+            return ""
+
     styled = (
         display_df[show_cols]
         .style
         .map(color_priority, subset=["priority"])
         .map(color_effort, subset=["effort"])
+        .map(color_score, subset=["score"])
         .format({"score": "{:.0f}", "authority_score": "{:.0f}"}, na_rep="-")
-        .background_gradient(subset=["score"], cmap="RdYlGn", vmin=0, vmax=100)
     )
-    st.dataframe(styled, use_container_width=True, height=520, hide_index=True)
+    st.dataframe(styled, width="stretch", height=520, hide_index=True)
 
     # Detail panel for selected domain
     st.markdown("---")

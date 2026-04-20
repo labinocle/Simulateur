@@ -34,7 +34,7 @@ TYPE_WEIGHT      = 0.15
 
 
 def score_opportunities(df: pd.DataFrame) -> pd.DataFrame:
-    df = df.copy()
+    df = pd.DataFrame(df).copy()
 
     # Normalize authority to 0-100 (cap at 100)
     auth = pd.to_numeric(df["authority_score"], errors="coerce").fillna(0).clip(0, 100)

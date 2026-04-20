@@ -102,7 +102,7 @@ def load_backlinks(filepath: str) -> pd.DataFrame:
         "generic": {},
     }[tool]
 
-    df = df.rename(columns=mapping)
+    df = df.rename(columns=mapping).copy()
 
     # Ensure all standard columns exist
     for col in STANDARD_COLS:
@@ -120,8 +120,8 @@ def load_backlinks(filepath: str) -> pd.DataFrame:
         )
 
     # Use best available authority score
-    df["authority_score"] = df["domain_rating"].fillna(df["domain_authority"]).fillna(0)
-    df["authority_score"] = pd.to_numeric(df["authority_score"], errors="coerce").fillna(0)
+    auth = df["domain_rating"].fillna(df.get("domain_authority", pd.Series(dtype=float))).fillna(0)
+    df["authority_score"] = pd.to_numeric(auth, errors="coerce").fillna(0)
 
     df["_source_tool"] = tool
     return df[STANDARD_COLS + ["authority_score", "_source_tool"]].drop_duplicates(
