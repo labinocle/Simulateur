@@ -36,8 +36,14 @@ TYPE_WEIGHT      = 0.15
 def score_opportunities(df: pd.DataFrame) -> pd.DataFrame:
     df = pd.DataFrame(df).copy()
 
-    # Normalize authority to 0-100 (cap at 100)
-    auth = pd.to_numeric(df["authority_score"], errors="coerce").fillna(0).clip(0, 100)
+    # Normalize authority to 0-100 using percentile rank within this dataset.
+    # This makes the scoring tool-agnostic: the top pages always score high
+    # regardless of whether the input is Ahrefs DR (0-100) or SEMrush Page ascore (0-60).
+    raw_auth = pd.to_numeric(df["authority_score"], errors="coerce").fillna(0)
+    if raw_auth.max() > 0:
+        auth = raw_auth.rank(pct=True) * 100
+    else:
+        auth = raw_auth
 
     effort_s  = df["effort"].map(EFFORT_SCORE).fillna(60)
     type_b    = df["opportunity_type"].map(TYPE_BONUS).fillna(0)

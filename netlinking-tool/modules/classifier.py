@@ -111,30 +111,75 @@ OPPORTUNITY_TYPES: dict[str, OpportunityType] = {
 }
 
 # Pattern rules: (regex_on_url, opportunity_type_key)
+# Ordered from most specific to least specific
 URL_PATTERNS: list[tuple[str, str]] = [
+    # TLD-based (highest priority)
     (r"\.(edu|gov)(/|$)", "edu_gov"),
+
+    # Known wikis
     (r"wikipedia\.org|wikia\.com|fandom\.com", "wiki"),
-    (r"(linkedin\.com|twitter\.com|facebook\.com|instagram\.com|youtube\.com"
+
+    # Social platforms & profiles
+    (r"(linkedin\.com|twitter\.com|x\.com|facebook\.com|instagram\.com|youtube\.com"
      r"|pinterest\.com|tiktok\.com|behance\.net|dribbble\.com|github\.com"
-     r"|medium\.com|substack\.com|about\.me|linktree\.com)", "social_profile"),
+     r"|medium\.com|substack\.com|about\.me|linktree\.com|xing\.com"
+     r"|viadeo\.com|malt\.fr|wellfound\.com|glassdoor\.com|crunchbase\.com)", "social_profile"),
+
+    # Press & major media (domain-level recognition)
+    (r"(forbes\.com|hbr\.org|techcrunch\.com|inc\.com|entrepreneur\.com"
+     r"|businessinsider\.|wired\.com|fastcompany\.com|harvard\.edu"
+     r"|theguardian\.com|bbc\.(co\.uk|com)|telegraph\.co\.uk|independent\.co\.uk"
+     r"|economist\.com|ft\.com|wsj\.com|nytimes\.com|bloomberg\.com"
+     r"|lesechos\.fr|lefigaro\.fr|lemonde\.fr|lequipe\.fr|20minutes\.fr"
+     r"|huffpost\.com|slate\.(fr|com)|nouvelobs\.com)", "press_media"),
+
+    # Directories & listings
     (r"(annuaire|directory|repertoire|listing|pages-jaunes|yelp\.com"
-     r"|foursquare|yellowpages|hotfrog|kompass|europages)", "directory"),
+     r"|foursquare|yellowpages|hotfrog|kompass|europages|trustpilot\.com"
+     r"|capterra\.com|g2\.com|getapp\.com|producthunt\.com|alternativeto\.net"
+     r"|clutch\.co|goodfirms\.co|sortlist\.(fr|com|be))", "directory"),
+
+    # Forums & communities
     (r"(forum|community|discuss|phpbb|vbulletin|discourse|reddit\.com"
-     r"|quora\.com|stackexchange|stackoverflow)", "forum_community"),
-    (r"(write-for-us|guest.post|contribute|submit.article|become.author"
-     r"|soumettre|article-invite|redacteur|collaborer)", "guest_post"),
-    (r"(ressource|resource|liens.utiles|useful.links|outils|tools|recommand"
-     r"|bookmark|favoris)", "resource_page"),
-    (r"(temoignage|testimonial|avis|review|client|customer|case.stud)", "testimonial"),
-    (r"(presse|press|media|actualite|news|journal|magazine|communique)", "press_media"),
-    (r"(/comment|#comment|#respond|/avis)", "comment_blog"),
+     r"|quora\.com|stackexchange|stackoverflow|slack\.com|discord\.com"
+     r"|groups\.google|community\.|answers\.)", "forum_community"),
+
+    # Testimonials & reviews
+    (r"(temoignage|testimonial|avis|review|client|customer|case.stud"
+     r"|success.stor|histoire.client|temoins)", "testimonial"),
+
+    # Guest post / write-for-us (URL path signals)
+    (r"(write-for-us|write_for_us|guest.post|guest.blog|contribute|submit.article"
+     r"|become.author|soumettre|article.invit|redacteur|collaborer|write.with.us"
+     r"|become.a.contributor)", "guest_post"),
+
+    # Resource / tools pages (URL path)
+    (r"(/ressource|/resource|liens.utiles|useful.links|/outils|/tools|/recommand"
+     r"|/bookmark|/favoris|/liste-|/liste_|/top-\d|/best-\d|/best-tools"
+     r"|/alternatives|/comparatif|/comparison)", "resource_page"),
+
+    # Statistics & research pages → treat as resource_page (high value, citable)
+    (r"(/statistic|/stats|/data|/research|/etude|/rapport|/survey|/benchmark"
+     r"|/insight|/whitepaper|/infographic|-statistics|-stats|-data\b)", "resource_page"),
+
+    # Blog articles → guest_post opportunity
+    (r"(/blog/|/articles?/|/post/|/actualit|/news/[^$]|/learn/|/guide/|/how-to"
+     r"|/tutorial|/glossar|/lexique|/fiche-|/dossier|/conseils)", "guest_post"),
+
+    # Press releases & news section
+    (r"(presse|press.release|communique|press-room|newsroom|media.center"
+     r"|/news$|/presse$|/actualites$)", "press_media"),
+
+    # Blog comments
+    (r"(/comment|#comment|#respond|/avis$)", "comment_blog"),
 ]
 
 ANCHOR_PATTERNS: list[tuple[str, str]] = [
     (r"(ressource|resource|lien.utile|useful|outil|tool|recommand)", "resource_page"),
     (r"(annuaire|directory|liste|listing)", "directory"),
     (r"(forum|discussion|communauté)", "forum_community"),
-    (r"(article|blog|guide|tutoriel|tutorial)", "guest_post"),
+    (r"(article|blog|guide|tutoriel|tutorial|how.to|statistique|étude)", "guest_post"),
+    (r"(temoignage|avis|review|client)", "testimonial"),
 ]
 
 

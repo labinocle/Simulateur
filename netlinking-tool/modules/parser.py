@@ -27,13 +27,22 @@ AHREFS_MAP = {
 }
 
 SEMRUSH_MAP = {
-    "Source URL": "source_url",
-    "Target URL": "target_url",
-    "Anchor Text": "anchor_text",
+    # Current SEMrush export format (2024-2025)
+    "Source url":    "source_url",
+    "Target url":    "target_url",
+    "Anchor":        "anchor_text",
+    "Page ascore":   "domain_rating",
+    "Source title":  "source_title",
+    "First seen":    "first_seen",
+    "Nofollow":      "_nofollow",   # inverted → dofollow in post-processing
+    # Legacy / alternate column names
+    "Source URL":    "source_url",
+    "Target URL":    "target_url",
+    "Anchor Text":   "anchor_text",
     "Authority Score": "domain_rating",
-    "Target Page Title": "page_title",
-    "Source Title": "source_title",
-    "Active": "dofollow",
+    "Domain ascore": "domain_authority",
+    "Active":        "dofollow",
+    "Source Title":  "source_title",
 }
 
 MAJESTIC_MAP = {
@@ -61,7 +70,7 @@ def _detect_tool(df: pd.DataFrame) -> str:
     cols = set(df.columns)
     if "Domain Rating" in cols or "Referring page URL" in cols:
         return "ahrefs"
-    if "Authority Score" in cols or "Source URL" in cols:
+    if "Page ascore" in cols or "Source url" in cols or "Authority Score" in cols or "Source URL" in cols:
         return "semrush"
     if "TrustFlow" in cols or "SourceURL" in cols:
         return "majestic"
@@ -104,6 +113,11 @@ def load_backlinks(filepath: str) -> pd.DataFrame:
 
     df = df.rename(columns=mapping).copy()
 
+    # SEMrush uses "Nofollow" (True = nofollow), convert to dofollow
+    if "_nofollow" in df.columns:
+        df["dofollow"] = ~df["_nofollow"].fillna(False).astype(bool)
+        df = df.drop(columns=["_nofollow"])
+
     # Ensure all standard columns exist
     for col in STANDARD_COLS:
         if col not in df.columns:
@@ -113,8 +127,8 @@ def load_backlinks(filepath: str) -> pd.DataFrame:
     if df["referring_domain"].isna().all():
         df["referring_domain"] = df["source_url"].apply(_extract_domain)
 
-    # Normalize dofollow to bool
-    if df["dofollow"].dtype == object:
+    # Normalize dofollow to bool (for tools using text values)
+    if "dofollow" in df.columns and df["dofollow"].dtype == object:
         df["dofollow"] = df["dofollow"].astype(str).str.lower().isin(
             ["true", "yes", "1", "dofollow", "follow"]
         )
